@@ -16,10 +16,6 @@
             gleam
             erlang
           ];
-
-          # shellHook = ''
-          #   source .env
-          # '';
         };
       }
     );
