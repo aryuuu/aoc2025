@@ -29,6 +29,11 @@ pub fn main() {
   }
   io.print("part 1: ")
   part1(grid, row_count, col_count, 0, 0, 0) |> int.to_string() |> io.println()
+
+  io.print("part 2: ")
+  part2(grid, row_count, col_count, 0, 0, [], [], 0, 0)
+  |> int.to_string()
+  |> io.println()
 }
 
 fn part1(
@@ -78,6 +83,119 @@ fn part1(
     }
     False -> {
       acc
+    }
+  }
+}
+
+fn part2(
+  grid: List(List(Bool)),
+  row: Int,
+  col: Int,
+  i: Int,
+  j: Int,
+  acc_grid: List(List(Bool)),
+  acc_row: List(Bool),
+  temp_acc: Int,
+  acc: Int,
+) -> Int {
+  let neighbors = [
+    #(i - 1, j - 1),
+    #(i - 1, j),
+    #(i - 1, j + 1),
+    #(i, j - 1),
+    #(i, j + 1),
+    #(i + 1, j - 1),
+    #(i + 1, j),
+    #(i + 1, j + 1),
+  ]
+  case i < row {
+    True -> {
+      case j < col {
+        True -> {
+          case is_paper_roll(grid, i, j) {
+            // in this case we will have to:
+            // - update the acc_row
+            // - update the j
+            False ->
+              part2(
+                grid,
+                row,
+                col,
+                i,
+                j + 1,
+                acc_grid,
+                list.append(acc_row, [False]),
+                temp_acc,
+                acc,
+              )
+            True -> {
+              // in this case we will have to:
+              // - update the acc_row
+              // - update the temp_acc
+              // - update the j
+              let count =
+                list.fold(neighbors, 0, fn(acc, pos) {
+                  case is_paper_roll(grid, pos.0, pos.1) {
+                    True -> acc + 1
+                    False -> acc
+                  }
+                })
+              let #(is_paper_roll, score) = case count < 4 {
+                True -> #(False, 1)
+                False -> #(True, 0)
+              }
+              part2(
+                grid,
+                row,
+                col,
+                i,
+                j + 1,
+                acc_grid,
+                list.append(acc_row, [is_paper_roll]),
+                temp_acc + score,
+                acc,
+              )
+            }
+          }
+        }
+        False -> {
+          // this is the case when we have reached the end of a row
+          // we will need to:
+          // - update the acc_grid
+          // - reset the acc_row
+          // - reset j
+          part2(
+            grid,
+            row,
+            col,
+            i + 1,
+            0,
+            list.append(acc_grid, [acc_row]),
+            [],
+            temp_acc,
+            acc,
+          )
+        }
+      }
+    }
+    False -> {
+      // this is when we are finished checking all rows
+      // there will be N possible cases:
+      // - there's no more paper roll that can be removed, that's the ultimate base case, we can just return acc here
+      // - there's some paper roll removed, in that case we should:
+      // // - update the grid with acc_grid
+      // // - update the acc with acc + temp_acc
+      // // - reset i
+      // // - reset j
+      // // - reset acc_grid
+      // // - reset acc_row
+      // // - reset the temp_acc
+      case temp_acc {
+        0 -> acc
+        _ -> {
+          part2(acc_grid, row, col, 0, 0, [], [], 0, acc + temp_acc)
+        }
+      }
     }
   }
 }
