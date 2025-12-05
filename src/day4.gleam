@@ -162,6 +162,7 @@ fn part2(
           // this is the case when we have reached the end of a row
           // we will need to:
           // - update the acc_grid
+          // - increment i
           // - reset the acc_row
           // - reset j
           part2(
@@ -180,7 +181,7 @@ fn part2(
     }
     False -> {
       // this is when we are finished checking all rows
-      // there will be N possible cases:
+      // there will be 2 possible cases:
       // - there's no more paper roll that can be removed, that's the ultimate base case, we can just return acc here
       // - there's some paper roll removed, in that case we should:
       // // - update the grid with acc_grid

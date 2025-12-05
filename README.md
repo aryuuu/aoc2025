@@ -16,6 +16,12 @@ pub fn main() -> Nil {
 
 Further documentation can be found at <https://hexdocs.pm/aoc2025>.
 
+## Running solution for day [N]
+
+```sh
+gleam run -m day[N]
+```
+
 ## Development
 
 ```sh
