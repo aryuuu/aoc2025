@@ -55,6 +55,41 @@ pub fn main() {
   })
   |> string.inspect()
   |> io.println()
+
+  io.print("part 2: ")
+  ranges
+  |> list.sort(fn(a, b) { int.compare(a.0, b.0) })
+  |> list.fold([], fn(acc: List(#(Int, Int)), range) {
+    case acc {
+      [] -> [range]
+      _ ->
+        case list.drop(acc, list.length(acc) - 1) {
+          [head] ->
+            case is_overlapping(head, range) {
+              True ->
+                list.append(list.take(acc, list.length(acc) - 1), [
+                  #(head.0, int.max(head.1, range.1)),
+                ])
+              False -> list.append(acc, [range])
+            }
+          _ -> acc
+          // should be unreachable
+        }
+    }
+  })
+  |> list.fold(0, fn(acc, range) { acc + 1 + range.1 - range.0 })
+  |> string.inspect()
+  |> io.println()
+}
+
+// a.0 is assumed to be <= b.0
+fn is_overlapping(a: #(Int, Int), b: #(Int, Int)) -> Bool {
+  case a.0 == b.0 {
+    True -> True
+    False -> {
+      a.1 >= b.0
+    }
+  }
 }
 
 fn is_in_any_range(ranges: List(#(Int, Int)), id: Int) -> Bool {
